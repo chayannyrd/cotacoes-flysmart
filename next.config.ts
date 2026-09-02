@@ -1,9 +1,5 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  output: "export",
-  trailingSlash: true,
-  basePath: "/cotacoes-flysmart",
-};
+const nextConfig: NextConfig = {};
 
 export default nextConfig;
