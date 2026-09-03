@@ -2,6 +2,7 @@ import { Trecho, FlightOption, FAMILIAS_TARIFARIAS, ESCALAS } from "@/types/quot
 import { novoId, mascaraDataInput, dataParaISO, isoParaData } from "@/lib/utils";
 import FlightOptionRow from "./FlightOptionRow";
 import AirportAutocomplete from "./AirportAutocomplete";
+import ExtractFromImage from "./ExtractFromImage";
 import { useRef } from "react";
 
 interface Props {
@@ -47,6 +48,20 @@ export default function TrechoForm({ trecho, label, onChange, onRemove }: Props)
 
   const removeVoo = (id: string) => {
     onChange({ ...trecho, voos: trecho.voos.filter((v) => v.id !== id) });
+  };
+
+  // Mescla o resultado da extração por IA neste trecho: mantém o id do
+  // trecho atual (não cria um novo card), só sobrescreve origem/destino/data
+  // se a IA conseguiu identificar algo, e acrescenta as opções de voo
+  // extraídas às que já existirem (não apaga o que o vendedor já preencheu).
+  const handleExtraido = (extraido: Trecho) => {
+    onChange({
+      ...trecho,
+      origem: extraido.origem || trecho.origem,
+      destino: extraido.destino || trecho.destino,
+      data: extraido.data || trecho.data,
+      voos: [...trecho.voos, ...extraido.voos],
+    });
   };
 
   return (
@@ -122,6 +137,10 @@ export default function TrechoForm({ trecho, label, onChange, onRemove }: Props)
             />
           </div>
         </label>
+      </div>
+
+      <div className="mb-3">
+        <ExtractFromImage onExtraido={handleExtraido} />
       </div>
 
       <div className="flex flex-col gap-2">
