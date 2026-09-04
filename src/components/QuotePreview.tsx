@@ -206,7 +206,20 @@ export default function QuotePreview({ data }: Props) {
                         {voo.partida} → {voo.chegada}
                       </div>
                       <div style={cellStyle(3)}>{voo.duracao || "—"}</div>
-                      <div style={cellStyle(4)}>{voo.escala || "—"}</div>
+                      <div style={cellStyle(4)}>
+                        <div>{voo.escala || "—"}</div>
+                        {voo.paradas && voo.paradas.length > 0 && (
+                          <div style={{ fontSize: "7pt", color: "#6b7280", marginTop: 2, lineHeight: 1.35 }}>
+                            {voo.paradas.map((p, i) => (
+                              <div key={p.id}>
+                                {voo.paradas.length > 1 ? `${i + 1}ª: ` : ""}
+                                {p.local || "?"}
+                                {p.tempoEspera ? ` (${p.tempoEspera})` : ""}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
                       <div style={cellStyle(5)}>{voo.bagagemIncluida ? "Incluído" : "Não incluído"}</div>
                       <div style={{ ...cellStyle(6), fontWeight: 700, color: BLUE, fontSize: "10pt" }}>
                         {voo.preco ? `R$ ${formatarMoeda(voo.preco)}` : "—"}

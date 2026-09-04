@@ -7,6 +7,12 @@ export interface ContactInfo {
   email: string;
 }
 
+export interface Parada {
+  id: string;
+  local: string; // ex: "GIG - Rio de Janeiro"
+  tempoEspera: string; // ex: "01h20"
+}
+
 export interface FlightOption {
   id: string;
   companhia: string;
@@ -16,6 +22,7 @@ export interface FlightOption {
   duracao: string; // HH:MM, sugerida automaticamente, editável
   duracaoManual: boolean; // true se o vendedor editou manualmente
   escala: string; // ex: "Direto", "1 parada", "2 paradas"
+  paradas: Parada[]; // detalhe de cada parada (local + tempo de espera); tamanho segue "escala"
   bagagemIncluida: boolean; // se a bagagem despachada está incluída nessa tarifa
   preco: string; // ex: "852,93"
 }

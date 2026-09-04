@@ -1,8 +1,13 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent, type ClipboardEvent } from "react";
-import { Trecho, FlightOption } from "@/types/quote";
+import { Trecho, FlightOption, Parada } from "@/types/quote";
 import { novoId, calcularDuracao } from "@/lib/utils";
+
+interface ExtractedParada {
+  local: string;
+  tempoEspera: string;
+}
 
 interface ExtractedVoo {
   companhia: string;
@@ -10,6 +15,7 @@ interface ExtractedVoo {
   partida: string;
   chegada: string;
   escala: string;
+  paradas: ExtractedParada[];
   bagagemIncluida: boolean;
   preco: string;
 }
@@ -26,18 +32,27 @@ interface Props {
 }
 
 function paraTrecho(ext: ExtractedTrecho): Trecho {
-  const voos: FlightOption[] = ext.voos.map((v) => ({
-    id: novoId("voo"),
-    companhia: v.companhia,
-    familiaTarifaria: v.familiaTarifaria,
-    partida: v.partida,
-    chegada: v.chegada,
-    duracao: calcularDuracao(v.partida, v.chegada),
-    duracaoManual: false,
-    escala: v.escala,
-    bagagemIncluida: v.bagagemIncluida,
-    preco: v.preco,
-  }));
+  const voos: FlightOption[] = ext.voos.map((v) => {
+    const paradas: Parada[] = (v.paradas ?? []).map((p) => ({
+      id: novoId("parada"),
+      local: p.local,
+      tempoEspera: p.tempoEspera,
+    }));
+
+    return {
+      id: novoId("voo"),
+      companhia: v.companhia,
+      familiaTarifaria: v.familiaTarifaria,
+      partida: v.partida,
+      chegada: v.chegada,
+      duracao: calcularDuracao(v.partida, v.chegada),
+      duracaoManual: false,
+      escala: v.escala,
+      paradas,
+      bagagemIncluida: v.bagagemIncluida,
+      preco: v.preco,
+    };
+  });
 
   return {
     id: novoId("trecho"),

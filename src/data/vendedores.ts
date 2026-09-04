@@ -52,5 +52,15 @@ export const VENDEDORES: Vendedor[] = [
     nome: "Henrique Vincler",
     email: "vinclerhenriquetbr@gmail.com",
     telefone: "+55 11 97863-7719"
-  }
+  },
+  {
+    nome: "Daniel Toledo",
+    email: "daniel@flysmartpassagens.com.br",
+    telefone: "+55 11 97083-0219"
+  },
+  {
+    nome: "Elton Freitas",
+    email: "elton@flysmartpassagens.com.br",
+    telefone: "+55 11 98328-5237"
+  },
 ];

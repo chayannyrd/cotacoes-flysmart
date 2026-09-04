@@ -23,7 +23,8 @@ function novoVoo(): FlightOption {
     duracao: "",
     duracaoManual: false,
     escala: ESCALAS[0],
-    bagagemIncluida: true,
+    paradas: [],
+    bagagemIncluida: false,
     preco: "",
   };
 }

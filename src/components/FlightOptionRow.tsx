@@ -1,6 +1,7 @@
-import { FlightOption, FAMILIAS_TARIFARIAS, ESCALAS } from "@/types/quote";
-import { calcularDuracao, mascaraMoedaInput } from "@/lib/utils";
+import { FlightOption, Parada, FAMILIAS_TARIFARIAS, ESCALAS } from "@/types/quote";
+import { calcularDuracao, mascaraMoedaInput, novoId, numParadas } from "@/lib/utils";
 import TimeSelect from "./TimeSelect";
+import AirportAutocomplete from "./AirportAutocomplete";
 
 interface Props {
   voo: FlightOption;
@@ -31,7 +32,28 @@ export default function FlightOptionRow({ voo, onChange, onRemove }: Props) {
     if (field === "duracao") {
       next = { ...next, duracaoManual: true };
     }
+    // Trocou de escala: ajusta a quantidade de "paradas" pra bater com o
+    // número de escalas escolhido, preservando o que já tinha sido
+    // preenchido (ex: se tinha 2 paradas e voltou pra 1, mantém a primeira).
+    if (field === "escala") {
+      const qtd = numParadas(value);
+      const paradasAtuais = voo.paradas ?? [];
+      const paradas: Parada[] = Array.from({ length: qtd }, (_, i) => paradasAtuais[i] ?? {
+        id: novoId("parada"),
+        local: "",
+        tempoEspera: "",
+      });
+      next = { ...next, paradas };
+    }
+
     onChange(next);
+  };
+
+  const setParada = (index: number, campo: keyof Parada, value: string) => {
+    const paradas = (voo.paradas ?? []).map((p, i) =>
+      i === index ? { ...p, [campo]: value } : p
+    );
+    onChange({ ...voo, paradas });
   };
 
   const setBagagemIncluida = (value: boolean) => {
@@ -41,7 +63,8 @@ export default function FlightOptionRow({ voo, onChange, onRemove }: Props) {
   const familias = FAMILIAS_TARIFARIAS[voo.companhia] ?? [];
 
   return (
-    <div className="flex flex-wrap items-end gap-2 rounded border border-slate-200 bg-slate-50 p-2.5">
+    <div className="rounded border border-slate-200 bg-slate-50 p-2.5">
+      <div className="flex flex-wrap items-end gap-2">
       <label className="flex w-24 flex-col gap-0.5 text-xs">
         <span className="text-slate-500">Companhia</span>
         <select
@@ -116,8 +139,8 @@ export default function FlightOptionRow({ voo, onChange, onRemove }: Props) {
           value={voo.bagagemIncluida ? "sim" : "nao"}
           onChange={(e) => setBagagemIncluida(e.target.value === "sim")}
         >
-          <option value="sim">Incluído</option>
           <option value="nao">Não incluído</option>
+          <option value="sim">Incluído</option>
         </select>
       </label>
 
@@ -147,6 +170,37 @@ export default function FlightOptionRow({ voo, onChange, onRemove }: Props) {
           Remover
         </button>
       </div>
+      </div>
+
+      {(voo.paradas ?? []).length > 0 && (
+        <div className="mt-2.5 flex flex-col gap-2 border-t border-slate-200 pt-2.5">
+          {(voo.paradas ?? []).map((parada, i) => (
+            <div key={parada.id} className="flex flex-wrap items-end gap-2">
+              <span className="w-20 pb-1.5 text-xs font-medium text-slate-500">
+                Parada {i + 1}
+              </span>
+              <label className="flex w-56 flex-col gap-0.5 text-xs">
+                <span className="text-slate-500">Local da parada</span>
+                <AirportAutocomplete
+                  value={parada.local}
+                  onChange={(v) => setParada(i, "local", v)}
+                  placeholder="Aeroporto da parada"
+                />
+              </label>
+              <label className="flex w-36 flex-col gap-0.5 text-xs">
+                <span className="text-slate-500" title="Formato: 01h20">
+                  Tempo de espera
+                </span>
+                <TimeSelect
+                  value={parada.tempoEspera}
+                  onChange={(v) => setParada(i, "tempoEspera", v)}
+                  separador="h"
+                />
+              </label>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

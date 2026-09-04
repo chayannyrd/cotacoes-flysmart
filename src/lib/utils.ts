@@ -24,6 +24,17 @@ export function calcularDuracao(partida: string, chegada: string): string {
   return `${String(horas).padStart(2, "0")}h${String(minutos).padStart(2, "0")}`;
 }
 
+/**
+ * Deriva quantas paradas uma escala representa, a partir do rótulo
+ * selecionado no formulário (ex: "1 parada" -> 1). Usado tanto pra
+ * redimensionar a lista de paradas no formulário quanto pra validar o
+ * retorno da extração por IA.
+ */
+export function numParadas(escala: string): number {
+  const match = /^(\d+)\s*parada/.exec(escala);
+  return match ? parseInt(match[1], 10) : 0;
+}
+
 let counter = 0;
 export function novoId(prefixo: string): string {
   counter += 1;
