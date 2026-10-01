@@ -63,4 +63,9 @@ export const VENDEDORES: Vendedor[] = [
     email: "elton@flysmartpassagens.com.br",
     telefone: "+55 11 98328-5237"
   },
+  {
+    nome: "Chayanny Rodrigues",
+    email: "chayannyflysmart@gmail.com",
+    telefone: "+55 75 98282-7430"
+  },
 ];
